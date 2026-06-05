@@ -529,7 +529,9 @@
     padding-bottom: 0.3rem;
     transition: border-color 0.3s, color 0.3s;
   }
-  .corr-link:hover { border-color: var(--paper-warm); }
+  .corr-link:hover,
+  .corr-link:active,
+  .corr-link:focus-visible { border-color: var(--paper-warm); color: #fff; outline: none; }
 
   /* ── FOOTER ── */
   footer {
@@ -549,7 +551,9 @@
     color: var(--teal-pale); text-decoration: none;
     transition: color 0.3s;
   }
-  .footer-nav a:hover { color: var(--ink); }
+  .footer-nav a:hover,
+  .footer-nav a:active,
+  .footer-nav a:focus-visible { color: var(--ink); outline: none; }
 
   /* ── Scroll reveal ── */
   .reveal {
