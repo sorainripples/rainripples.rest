@@ -355,7 +355,7 @@
     grid-template-columns: repeat(12, 1fr);
     column-gap: 1.5rem; row-gap: 6rem;
   }
-  .work-item { position: relative; display: block; text-decoration: none; color: inherit; }
+  .work-item { position: relative; display: block; text-decoration: none; color: inherit; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
   .work-item:nth-child(1) { grid-column: 1 / 7; }
   .work-item:nth-child(2) { grid-column: 7 / 13; margin-top: 7rem; }
   .work-item:nth-child(3) { grid-column: 2 / 8; }
@@ -582,6 +582,30 @@
     .about-inner { width: min(480px, 88vw); }
     .work-blurb { max-width: none; }
     .about-wash svg { width: min(820px, 100vw); }
+
+    /* Work — overlay hidden at rest; tap flashes it as feedback */
+    .work-item:active .work-thumb::after { opacity: 1; }
+    .work-item:active .work-cta { opacity: 1; }
+    .work-item:active .work-thumb-fill { transform: scale(1.03); }
+    .work-title::after { content: attr(data-cta) ' ↗'; display: block; width: fit-content; margin-top: 0.7rem; font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--teal-mid); border: 1px solid rgba(42,102,112,0.45); padding: 0.45rem 1rem; }
+
+    /* Find Me — fix arrow clipping from overflow:hidden + translate; circle-badge arrow; tap feedback */
+    .platform-row { overflow: visible; }
+    .platform-arrow { color: var(--teal-mid); width: 2.2rem; height: 2.2rem; border: 1px solid rgba(42,102,112,0.35); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.95rem; flex-shrink: 0; }
+    .platform-row:active { background: rgba(42,102,112,0.08); border-radius: 4px; }
+    .platform-row:active .platform-name { color: var(--teal-mid); }
+    .platform-row:active .platform-arrow { background: rgba(42,102,112,0.18); }
+
+    /* Neutralise hover states — on touch, :hover sticks after tap (iOS) or misfires;
+       resting CTAs + :active feedback are sufficient */
+    .work-item:hover .work-thumb::after { opacity: 0; }
+    .work-item:hover .work-cta { opacity: 0; transform: translateY(5px); }
+    .work-item:hover .work-thumb-fill { transform: none; }
+    .work-item:hover .work-title { color: #1a5060; }
+    .work-item:hover .work-blurb { color: var(--teal-pale); }
+    .platform-row:hover .platform-inner { transform: none; }
+    .platform-row:hover .platform-name { color: var(--ink); }
+    .platform-row:hover .platform-arrow { transform: none; color: var(--teal-mid); }
   }
 
   /* ── MOBILE (≤768px) ── */
@@ -617,10 +641,13 @@
     .work-meta { width: 100%; }
     .work-cta { font-size: 0.85rem; }
 
-    /* Platforms */
+    /* Platforms — two-line layout with description visible */
     #platforms { padding: 6vh 5vw; }
-    .platform-name { font-size: clamp(1.2rem, 6vw, 2rem); }
-    .platform-desc { display: none; }
+    .platform-inner { flex-wrap: wrap; gap: 0.2rem 2rem; }
+    .platform-num { order: 1; }
+    .platform-name { order: 2; font-size: clamp(1.2rem, 6vw, 2rem); }
+    .platform-arrow { order: 3; }
+    .platform-desc { order: 4; display: block; flex-basis: 100%; padding-left: 4.5rem; font-size: 0.62rem; text-align: left; max-width: none; line-height: 1.5; }
     .platform-row { padding: 1.6rem 0; }
 
     /* Correspondence */
@@ -748,7 +775,7 @@ Right by the willow trees, the lake rippled.</span>
       </div>
       <div class="work-meta">
         <div class="work-type">Speculative Fiction</div>
-        <div class="work-title">ShArD</div>
+        <div class="work-title" data-cta="Read ShArD">ShArD</div>
         <div class="work-blurb">In a city of machinations, Jazelle doesn't fit. With her estranged sister resurfacing and the government closing in, she must choose between the safety of her workshop and a truth she can no longer outrun.</div>
       </div>
     </a>
@@ -762,7 +789,7 @@ Right by the willow trees, the lake rippled.</span>
       </div>
       <div class="work-meta">
         <div class="work-type">Webcomic</div>
-        <div class="work-title">White Feather</div>
+        <div class="work-title" data-cta="Read White Feather">White Feather</div>
         <div class="work-blurb">Forced to return to his colonized homeland, Damir Tiryaki must navigate through a series of political and personal trials while confronting the wrath of his own memories. (Transitioning to novel).</div>
       </div>
     </a>
@@ -776,7 +803,7 @@ Right by the willow trees, the lake rippled.</span>
       </div>
       <div class="work-meta">
         <div class="work-type">Music</div>
-        <div class="work-title">Compositions</div>
+        <div class="work-title" data-cta="Listen on Spotify">Compositions</div>
         <div class="work-blurb">Scores for the webcomics, and personal experiments on sound. Available on Spotify.</div>
       </div>
     </a>
@@ -790,7 +817,7 @@ Right by the willow trees, the lake rippled.</span>
       </div>
       <div class="work-meta">
         <div class="work-type">Storytelling</div>
-        <div class="work-title">YouTube</div>
+        <div class="work-title" data-cta="Watch on YouTube">YouTube</div>
         <div class="work-blurb">Stories and essays that don't fit anywhere else. Occasional, deliberate, honest.</div>
       </div>
     </a>
@@ -910,8 +937,8 @@ Right by the willow trees, the lake rippled.</span>
     } else {
       nav.classList.remove('scrolled');
     }
-    // Hide while actively scrolling (only if past top)
-    if (y > 100) {
+    // Hide while actively scrolling — desktop only; mobile/tablet always keeps nav visible
+    if (y > 100 && window.innerWidth > 1024) {
       nav.classList.add('hidden');
     }
     // Clear any existing timer
